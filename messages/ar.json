@@ -1,0 +1,150 @@
+{
+  "Home": {
+    "ariaLogo": "Zed Market",
+    "heroTitle": "أحذية جلدية",
+    "heroTitleAccent": "صُنعت لتدوم",
+    "heroSubtitle": "أسلوب أنيق، تشطيب دقيق، توصيل مجاني في جميع مدن المغرب.",
+    "heroCta": "تسوّق الآن",
+    "featuresTitle": "لماذا Zed Market؟",
+    "feature1Title": "توصيل مجاني",
+    "feature1Desc": "توصيل مجاني لجميع المدن المغربية بدون حد أدنى للطلب.",
+    "feature2Title": "الدفع عند الاستلام",
+    "feature2Desc": "ادفع فقط عند استلام ومعاينة طلبك.",
+    "feature3Title": "جلد أصلي",
+    "feature3Desc": "مواد مختارة بعناية للراحة والمتانة.",
+    "productsTitle": "منتجاتنا",
+    "productsSubtitle": "اكتشف مجموعتنا من الأحذية الجلدية.",
+    "shopNow": "اطلب الآن",
+    "categoryShoes": "أحذية",
+    "newBadge": "جديد",
+    "bannerText": "🔥 توصيل مجاني في جميع أنحاء المغرب — اطلب الآن",
+    "trustTitle": "ثقة عملائنا",
+    "trustSubtitle": "خدمة بسيطة وسريعة وبدون مفاجآت."
+  },
+  "LocaleSwitcher": {
+    "label": "اللغة",
+    "fr": "FR",
+    "ar": "عربي"
+  },
+  "Footer": {
+    "salesPolicy": "سياسة الطلب والدفع"
+  },
+  "ThankYou": {
+    "title": "شكرًا على طلبك",
+    "subtitle": "تم استلام طلبك بنجاح. سيتواصل معك فريقنا قريبًا لتأكيد تفاصيل التوصيل.",
+    "ctaProduct": "العودة إلى المنتج",
+    "ctaHome": "الرئيسية",
+    "metadataTitle": "شكرًا لك | Zed Market",
+    "metadataDescription": "تم تسجيل طلبك. سنتواصل معك قريبًا."
+  },
+  "ProductFloria279": {
+    "title": "فلوريا",
+    "seriesLabel": "#279",
+    "subtitle": "حذاء جلدي بأسلوب أنيق وتشطيب دقيق. اطلب الآن مباشرة من الموقع مع التوصيل في المغرب.",
+    "bullets": [
+      "جلد بني أملس وخياطات متناسقة",
+      "نعل أسود سميك ومريح للمشي",
+      "لسان الحذاء وعلامة FLORIA ظاهرة"
+    ],
+    "reviews": {
+      "title": "معيار الجودة عندنا",
+      "subtitle": "تقييم جودة داخلي لهذا المنتج.",
+      "ariaFiveStars": "5 من 5 نجوم",
+      "note": "تمت تجربته شخصيًا من حيث الراحة وجودة التصنيع."
+    },
+    "qualityBadge": {
+      "title": "ضمان الجودة",
+      "description": "منتج تم اختباره والموافقة عليه من فريقنا"
+    },
+    "imageAlt": "حذاء فلوريا #279 جلدي بني على طاولة زليج بخلفية مغربية.",
+    "metadataTitle": "فلوريا #279 — جلد | اطلب الآن",
+    "metadataDescription": "حذاء فلوريا #279 جلدي بني. اختر المقاس واطلب مباشرة عبر الموقع — التوصيل في المغرب.",
+    "galleryThumbnailsLabel": "صور وفيديو",
+    "gallerySlideGoTo": "الانتقال إلى الشريحة {number}",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbCategory": "الأحذية"
+  },
+  "ProductNova101": {
+    "title": "نوفا",
+    "seriesLabel": "#101",
+    "subtitle": "حذاء جلدي بأسلوب أنيق وتشطيب دقيق. اطلب الآن مباشرة من الموقع مع التوصيل في المغرب.",
+    "bullets": [
+      "جلد ممتاز وخياطة نظيفة",
+      "نعل متين ومريح للاستعمال اليومي",
+      "علامة NOVA ظاهرة على الجزء العلوي"
+    ],
+    "qualityBadge": {
+      "title": "ضمان الجودة",
+      "description": "منتج تم اختباره والموافقة عليه من فريقنا"
+    },
+    "imageAlt": "حذاء نوفا #101 جلدي على طاولة زليج بخلفية مغربية.",
+    "metadataTitle": "نوفا #101 — جلد | اطلب الآن",
+    "metadataDescription": "حذاء نوفا #101 جلدي. اختر المقاس واطلب مباشرة عبر الموقع — التوصيل في المغرب.",
+    "galleryThumbnailsLabel": "صور وفيديو",
+    "gallerySlideGoTo": "الانتقال إلى الشريحة {number}",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbCategory": "الأحذية"
+  },
+  "Order": {
+    "sizeLabel": "المقاس (EU)",
+    "qtyLabel": "الكمية",
+    "cityLabel": "المدينة",
+    "cityPlaceholder": "ابدأ بكتابة مدينتك",
+    "nameLabel": "الاسم (اختياري)",
+    "namePlaceholder": "اسمك",
+    "unitPriceLabel": "سعر الوحدة",
+    "totalPriceLabel": "المجموع",
+    "currency": "درهم",
+    "phoneLabel": "الهاتف",
+    "phonePlaceholder": "رقم هاتفك",
+    "orderButton": "اطلب الآن",
+    "stickyBarLabel": "السعر",
+    "trustBadgeDelivery": "توصيل مجاني",
+    "trustBadgePayment": "الدفع عند الاستلام",
+    "requiredHint": "يرجى اختيار المقاس والمدينة وإدخال رقم الهاتف.",
+    "submitting": "جاري إرسال الطلب...",
+    "submitSuccess": "تم إرسال الطلب بنجاح. سنتواصل معك قريبًا.",
+    "submitError": "فشل إرسال الطلب. حاول مرة أخرى.",
+    "whatsappIntro": "السلام عليكم،",
+    "whatsappProduct": "أرغب في طلب: {productName}، المقاس EU {size}، الكمية: {qty}.",
+    "whatsappCity": "المدينة: {city}.",
+    "whatsappName": "الاسم: {name}.",
+    "whatsappFooter": "(Zed Market)"
+  },
+  "SalesPolicy": {
+    "title": "سياسة الطلب والدفع",
+    "backToProduct": "العودة إلى المنتج",
+    "intro": "يرجى قراءة هذه السياسة قبل تأكيد أي طلب.",
+    "points": [
+      "لا نضمن توفر المنتج في جميع الأوقات.",
+      "يتم تأكيد الطلب فقط بعد التحقق من توفر المقاس أو المنتج.",
+      "طريقة الدفع المتاحة حاليًا: الدفع عند الاستلام فقط.",
+      "يمكنك معاينة المنتج لحظة التسليم قبل تأكيد الاستلام."
+    ],
+    "metadataTitle": "سياسة الطلب والدفع | Zed Market",
+    "metadataDescription": "توضيح سياسة توفر المنتجات والدفع عند الاستلام ومعاينة المنتج لحظة التسليم قبل تأكيد الطلب."
+  },
+  "Cities": {
+    "casablanca": "الدار البيضاء",
+    "rabat": "الرباط",
+    "marrakech": "مراكش",
+    "fes": "فاس",
+    "tanger": "طنجة",
+    "agadir": "أكادير",
+    "meknes": "مكناس",
+    "oujda": "وجدة",
+    "kenitra": "القنيطرة",
+    "sale": "سلا",
+    "mohammedia": "المحمدية",
+    "tetouan": "تطوان",
+    "el_jadida": "الجديدة",
+    "safi": "آسفي",
+    "nador": "الناظور",
+    "beni_mellal": "بني ملال",
+    "khouribga": "خريبكة",
+    "temara": "تمارة",
+    "berrechid": "برشيد",
+    "laayoune": "العيون",
+    "dakhla": "الداخلة"
+  }
+}

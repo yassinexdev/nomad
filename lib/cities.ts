@@ -1,0 +1,25 @@
+export const CITY_IDS = [
+  "casablanca",
+  "rabat",
+  "marrakech",
+  "fes",
+  "tanger",
+  "agadir",
+  "meknes",
+  "oujda",
+  "kenitra",
+  "sale",
+  "mohammedia",
+  "tetouan",
+  "el_jadida",
+  "safi",
+  "nador",
+  "beni_mellal",
+  "khouribga",
+  "temara",
+  "berrechid",
+  "laayoune",
+  "dakhla",
+] as const;
+
+export type CityId = (typeof CITY_IDS)[number];

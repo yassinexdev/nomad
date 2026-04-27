@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, Monaco,
+    Consolas, monospace;
+  --font-arabic: var(--font-noto-arabic), ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Order CTA: soft “breathing” glow (respect reduced motion via Tailwind motion-reduce:animate-none) */
+@keyframes order-cta-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 18px -6px rgb(16 185 129 / 0.5),
+      0 0 0 0 rgb(52 211 153 / 0);
+  }
+  50% {
+    box-shadow:
+      0 8px 28px -8px rgb(52 211 153 / 0.55),
+      0 0 0 10px rgb(16 185 129 / 0);
+  }
+}
+
+/* WhatsApp floating button pulse */
+@keyframes whatsapp-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 14px -4px rgba(37, 211, 102, 0.5);
+  }
+  50% {
+    box-shadow: 0 6px 20px -4px rgba(37, 211, 102, 0.7), 0 0 0 8px rgba(37, 211, 102, 0);
+  }
+}

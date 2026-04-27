@@ -1,0 +1,150 @@
+{
+  "Home": {
+    "ariaLogo": "Zed Market",
+    "heroTitle": "Chaussures en cuir",
+    "heroTitleAccent": "fabriquées pour durer",
+    "heroSubtitle": "Style sobre, finition soignée, livraison gratuite partout au Maroc.",
+    "heroCta": "Voir la collection",
+    "featuresTitle": "Pourquoi Zed Market ?",
+    "feature1Title": "Livraison gratuite",
+    "feature1Desc": "Livraison offerte dans toutes les villes du Maroc, sans minimum d'achat.",
+    "feature2Title": "Paiement à la livraison",
+    "feature2Desc": "Payez uniquement quand vous recevez et vérifiez votre commande.",
+    "feature3Title": "Cuir véritable",
+    "feature3Desc": "Des matériaux sélectionnés pour le confort et la durabilité.",
+    "productsTitle": "Nos produits",
+    "productsSubtitle": "Découvrez notre sélection de chaussures en cuir.",
+    "shopNow": "Commander",
+    "categoryShoes": "Chaussures",
+    "newBadge": "Nouveau",
+    "bannerText": "🔥 Livraison gratuite partout au Maroc — Commandez maintenant",
+    "trustTitle": "La confiance de nos clients",
+    "trustSubtitle": "Un service simple, rapide et sans surprise."
+  },
+  "LocaleSwitcher": {
+    "label": "Langue",
+    "fr": "FR",
+    "ar": "عربي"
+  },
+  "Footer": {
+    "salesPolicy": "Politique de commande et de paiement"
+  },
+  "ThankYou": {
+    "title": "Merci pour votre commande",
+    "subtitle": "Nous avons bien reçu votre demande. Notre équipe vous contactera bientôt pour confirmer la livraison.",
+    "ctaProduct": "Retour au produit",
+    "ctaHome": "Accueil",
+    "metadataTitle": "Merci | Zed Market",
+    "metadataDescription": "Votre commande a bien été enregistrée. Nous vous recontactons très vite."
+  },
+  "ProductFloria279": {
+    "title": "Floria",
+    "seriesLabel": "#279",
+    "subtitle": "Chaussure en cuir — style sobre, finition soignee. Commandez maintenant en ligne, livraison au Maroc.",
+    "bullets": [
+      "Cuir lisse marron, surpiqures ton sur ton",
+      "Semelle noire épaisse, bonne tenue au sol",
+      "Languette et marque FLORIA visibles"
+    ],
+    "reviews": {
+      "title": "Notre standard qualite",
+      "subtitle": "Score de qualite interne pour ce produit.",
+      "ariaFiveStars": "5 etoiles sur 5",
+      "note": "Personnellement teste pour le confort et la qualite de fabrication."
+    },
+    "qualityBadge": {
+      "title": "Garantie qualité",
+      "description": "Produit testé et approuvé par notre équipe"
+    },
+    "imageAlt": "Chaussures Floria #279 en cuir marron sur une table zellige, decor marocain.",
+    "metadataTitle": "Floria #279 — chaussure cuir | Commander maintenant",
+    "metadataDescription": "Chaussure Floria #279 en cuir marron. Choisissez votre pointure et passez commande en ligne — livraison au Maroc.",
+    "galleryThumbnailsLabel": "Photos et vidéo",
+    "gallerySlideGoTo": "Aller à la vue {number}",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbCategory": "Chaussures"
+  },
+  "ProductNova101": {
+    "title": "Nova",
+    "seriesLabel": "#101",
+    "subtitle": "Chaussure en cuir — style sobre, finition soignée. Commandez maintenant en ligne, livraison au Maroc.",
+    "bullets": [
+      "Cuir premium, surpiqûres propres",
+      "Semelle durable pensée pour le confort au quotidien",
+      "Marquage NOVA sur l’empeigne"
+    ],
+    "qualityBadge": {
+      "title": "Garantie qualité",
+      "description": "Produit testé et approuvé par notre équipe"
+    },
+    "imageAlt": "Chaussures Nova #101 en cuir sur une table zellige, decor marocain.",
+    "metadataTitle": "Nova #101 — chaussure cuir | Commander maintenant",
+    "metadataDescription": "Chaussure Nova #101 en cuir. Choisissez votre pointure et passez commande en ligne — livraison au Maroc.",
+    "galleryThumbnailsLabel": "Photos et vidéo",
+    "gallerySlideGoTo": "Aller à la vue {number}",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbCategory": "Chaussures"
+  },
+  "Order": {
+    "sizeLabel": "Pointure (EU)",
+    "qtyLabel": "Quantité",
+    "cityLabel": "Ville",
+    "cityPlaceholder": "Commencez a saisir votre ville",
+    "nameLabel": "Nom (facultatif)",
+    "namePlaceholder": "Votre nom",
+    "unitPriceLabel": "Prix unitaire",
+    "totalPriceLabel": "Total",
+    "currency": "DH",
+    "phoneLabel": "Telephone",
+    "phonePlaceholder": "Votre numero de telephone",
+    "orderButton": "Commander maintenant",
+    "stickyBarLabel": "Prix",
+    "trustBadgeDelivery": "Livraison gratuite",
+    "trustBadgePayment": "Paiement à la livraison",
+    "requiredHint": "Veuillez choisir une pointure, une ville et un numero de telephone.",
+    "submitting": "Envoi de la commande...",
+    "submitSuccess": "Commande envoyee avec succes. Nous vous contacterons bientot.",
+    "submitError": "Echec de la commande. Veuillez reessayer.",
+    "whatsappIntro": "Bonjour,",
+    "whatsappProduct": "Je souhaite commander : {productName}, pointure EU {size}, quantité : {qty}.",
+    "whatsappCity": "Ville : {city}.",
+    "whatsappName": "Nom : {name}.",
+    "whatsappFooter": "(Zed Market)"
+  },
+  "SalesPolicy": {
+    "title": "Politique de commande et de paiement",
+    "backToProduct": "Retour au produit",
+    "intro": "Veuillez lire cette politique avant de confirmer une commande.",
+    "points": [
+      "Nous ne garantissons pas la disponibilité du produit à tout moment.",
+      "La commande est confirmée uniquement après vérification de la disponibilité du produit ou de la pointure.",
+      "Mode de paiement actuellement accepté : paiement à la livraison uniquement.",
+      "Vous pouvez verifier le produit au moment de la livraison avant de confirmer la reception."
+    ],
+    "metadataTitle": "Politique de commande et de paiement | Zed Market",
+    "metadataDescription": "Precise la disponibilite des produits, le paiement a la livraison et la verification du produit au moment de la livraison avant confirmation."
+  },
+  "Cities": {
+    "casablanca": "Casablanca",
+    "rabat": "Rabat",
+    "marrakech": "Marrakech",
+    "fes": "Fès",
+    "tanger": "Tanger",
+    "agadir": "Agadir",
+    "meknes": "Meknès",
+    "oujda": "Oujda",
+    "kenitra": "Kénitra",
+    "sale": "Salé",
+    "mohammedia": "Mohammedia",
+    "tetouan": "Tétouan",
+    "el_jadida": "El Jadida",
+    "safi": "Safi",
+    "nador": "Nador",
+    "beni_mellal": "Béni Mellal",
+    "khouribga": "Khouribga",
+    "temara": "Témara",
+    "berrechid": "Berrechid",
+    "laayoune": "Laayoune",
+    "dakhla": "Dakhla"
+  }
+}
