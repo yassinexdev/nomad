@@ -8,10 +8,13 @@ export type NewOrder = {
   phone: string;
   name?: string;
   notes?: string;
+  status?: OrderStatus;
   locale: string;
   unitPrice: number;
   totalPrice: number;
 };
+
+export type OrderStatus = "new" | "confirmed" | "shipped" | "delivered" | "cancelled";
 
 export type OrderRow = {
   id: number;
@@ -22,10 +25,12 @@ export type OrderRow = {
   phone: string;
   name: string | null;
   notes: string | null;
+  status: OrderStatus;
   locale: string;
   unit_price: number;
   total_price: number;
   created_at: string;
+  updated_at: string;
 };
 
 function getDb() {
@@ -48,12 +53,18 @@ async function ensureOrdersTable() {
       phone TEXT NOT NULL,
       name TEXT,
       notes TEXT,
+      status TEXT NOT NULL DEFAULT 'new',
       locale TEXT NOT NULL,
       unit_price INTEGER NOT NULL CHECK (unit_price >= 0),
       total_price INTEGER NOT NULL CHECK (total_price >= 0),
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+
+  // Backwards-compatible migrations for existing deployments.
+  await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'new'`;
+  await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`;
 }
 
 export async function createOrder(order: NewOrder) {
@@ -62,7 +73,7 @@ export async function createOrder(order: NewOrder) {
 
   await sql`
     INSERT INTO orders (
-      product_code, size, qty, city, phone, name, notes, locale, unit_price, total_price
+      product_code, size, qty, city, phone, name, notes, status, locale, unit_price, total_price
     )
     VALUES (
       ${order.productCode},
@@ -72,6 +83,7 @@ export async function createOrder(order: NewOrder) {
       ${order.phone},
       ${order.name ?? null},
       ${order.notes ?? null},
+      ${order.status ?? "new"},
       ${order.locale},
       ${order.unitPrice},
       ${order.totalPrice}
@@ -93,10 +105,12 @@ export async function getOrders(): Promise<OrderRow[]> {
       phone,
       name,
       notes,
+      status,
       locale,
       unit_price,
       total_price,
-      created_at
+      created_at,
+      updated_at
     FROM orders
     ORDER BY created_at DESC
     LIMIT 200

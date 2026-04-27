@@ -15,6 +15,15 @@ function buildDailyData(orders: OrderRow[], days: number): BarData[] {
   const now = new Date();
   const result: BarData[] = [];
 
+  const byDay = new Map<string, { revenue: number; orders: number }>();
+  for (const o of orders) {
+    const key = new Date(o.created_at).toISOString().slice(0, 10);
+    const prev = byDay.get(key) ?? { revenue: 0, orders: 0 };
+    prev.revenue += o.total_price;
+    prev.orders += 1;
+    byDay.set(key, prev);
+  }
+
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
@@ -23,15 +32,8 @@ function buildDailyData(orders: OrderRow[], days: number): BarData[] {
       day: "2-digit",
       month: "short",
     }).format(d);
-    result.push({ label, revenue: 0, orders: 0 });
-
-    for (const o of orders) {
-      const orderDate = new Date(o.created_at).toISOString().slice(0, 10);
-      if (orderDate === key) {
-        result[result.length - 1].revenue += o.total_price;
-        result[result.length - 1].orders += 1;
-      }
-    }
+    const agg = byDay.get(key);
+    result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
   }
 
   return result;
@@ -41,6 +43,16 @@ function buildMonthlyData(orders: OrderRow[]): BarData[] {
   const now = new Date();
   const result: BarData[] = [];
 
+  const byMonth = new Map<string, { revenue: number; orders: number }>();
+  for (const o of orders) {
+    const od = new Date(o.created_at);
+    const key = `${od.getFullYear()}-${String(od.getMonth() + 1).padStart(2, "0")}`;
+    const prev = byMonth.get(key) ?? { revenue: 0, orders: 0 };
+    prev.revenue += o.total_price;
+    prev.orders += 1;
+    byMonth.set(key, prev);
+  }
+
   for (let i = 11; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const yearMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -48,16 +60,8 @@ function buildMonthlyData(orders: OrderRow[]): BarData[] {
       month: "short",
       year: "2-digit",
     }).format(d);
-    result.push({ label, revenue: 0, orders: 0 });
-
-    for (const o of orders) {
-      const od = new Date(o.created_at);
-      const orderYearMonth = `${od.getFullYear()}-${String(od.getMonth() + 1).padStart(2, "0")}`;
-      if (orderYearMonth === yearMonth) {
-        result[result.length - 1].revenue += o.total_price;
-        result[result.length - 1].orders += 1;
-      }
-    }
+    const agg = byMonth.get(yearMonth);
+    result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
   }
 
   return result;

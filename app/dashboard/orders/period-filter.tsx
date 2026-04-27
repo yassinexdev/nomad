@@ -14,7 +14,7 @@ export type Period = (typeof PERIODS)[number]["key"];
 export function PeriodFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const current = (searchParams.get("period") as Period) || "all";
+  const current = (searchParams.get("period") as Period) || "today";
 
   function handleClick(period: Period) {
     const params = new URLSearchParams(searchParams.toString());
