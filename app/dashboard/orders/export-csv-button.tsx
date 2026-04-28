@@ -32,7 +32,6 @@ function ordersToCsv(orders: OrderRow[]): string {
     "Notes",
     "Prix unitaire",
     "Total",
-    "Langue",
   ];
 
   const rows = orders.map((o) => [
@@ -46,7 +45,6 @@ function ordersToCsv(orders: OrderRow[]): string {
     escapeCsv(o.notes ?? ""),
     String(o.unit_price),
     String(o.total_price),
-    escapeCsv(o.locale),
   ]);
 
   return [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");

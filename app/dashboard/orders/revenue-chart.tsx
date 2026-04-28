@@ -9,7 +9,7 @@ type BarData = {
   orders: number;
 };
 
-type ChartView = "days" | "months";
+type ChartView = "days" | "weeks" | "months";
 
 function buildDailyData(orders: OrderRow[], days: number): BarData[] {
   const now = new Date();
@@ -33,6 +33,56 @@ function buildDailyData(orders: OrderRow[], days: number): BarData[] {
       month: "short",
     }).format(d);
     const agg = byDay.get(key);
+    result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
+  }
+
+  return result;
+}
+
+function startOfWeekMonday(d: Date) {
+  const out = new Date(d);
+  out.setHours(0, 0, 0, 0);
+  const day = out.getDay(); // 0..6 (Sun..Sat)
+  const diff = day === 0 ? 6 : day - 1; // Monday-based
+  out.setDate(out.getDate() - diff);
+  return out;
+}
+
+function getYearWeekKey(d: Date) {
+  // ISO-ish week key based on Monday start; sufficient for chart grouping.
+  const start = startOfWeekMonday(d);
+  const year = start.getFullYear();
+  const jan4 = new Date(year, 0, 4);
+  const week1 = startOfWeekMonday(jan4);
+  const week = Math.floor((start.getTime() - week1.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+  const padded = String(week).padStart(2, "0");
+  return `${year}-W${padded}`;
+}
+
+function buildWeeklyData(orders: OrderRow[], weeks: number): BarData[] {
+  const now = new Date();
+  const result: BarData[] = [];
+
+  const byWeek = new Map<string, { revenue: number; orders: number }>();
+  for (const o of orders) {
+    const od = new Date(o.created_at);
+    const key = getYearWeekKey(od);
+    const prev = byWeek.get(key) ?? { revenue: 0, orders: 0 };
+    prev.revenue += o.total_price;
+    prev.orders += 1;
+    byWeek.set(key, prev);
+  }
+
+  const currentWeekStart = startOfWeekMonday(now);
+  for (let i = weeks - 1; i >= 0; i--) {
+    const ws = new Date(currentWeekStart);
+    ws.setDate(ws.getDate() - i * 7);
+    const key = getYearWeekKey(ws);
+    const label = new Intl.DateTimeFormat("fr-MA", {
+      day: "2-digit",
+      month: "short",
+    }).format(ws);
+    const agg = byWeek.get(key);
     result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
   }
 
@@ -69,6 +119,7 @@ function buildMonthlyData(orders: OrderRow[]): BarData[] {
 
 const VIEW_OPTIONS: { key: ChartView; label: string }[] = [
   { key: "days", label: "30 jours" },
+  { key: "weeks", label: "12 semaines" },
   { key: "months", label: "12 mois" },
 ];
 
@@ -76,7 +127,12 @@ export function RevenueChart({ orders }: { orders: OrderRow[] }) {
   const [view, setView] = useState<ChartView>("days");
 
   const data = useMemo(
-    () => (view === "days" ? buildDailyData(orders, 30) : buildMonthlyData(orders)),
+    () =>
+      view === "days"
+        ? buildDailyData(orders, 30)
+        : view === "weeks"
+          ? buildWeeklyData(orders, 12)
+          : buildMonthlyData(orders),
     [orders, view],
   );
   const maxRevenue = Math.max(...data.map((d) => d.revenue), 1);
@@ -139,7 +195,7 @@ export function RevenueChart({ orders }: { orders: OrderRow[] }) {
                 <div
                   className={[
                     "w-full rounded-t-md transition-all duration-300",
-                    view === "days" ? "max-w-[18px]" : "max-w-[36px]",
+                    view === "days" ? "max-w-[18px]" : view === "weeks" ? "max-w-[28px]" : "max-w-[36px]",
                     isLast
                       ? "bg-emerald-500 shadow-sm shadow-emerald-500/30"
                       : bar.revenue > 0
@@ -159,7 +215,7 @@ export function RevenueChart({ orders }: { orders: OrderRow[] }) {
                   view === "days" ? "text-[8px]" : "text-[10px]",
                   isLast ? "text-emerald-400 font-semibold" : "text-zinc-600",
                   // Hide some day labels to avoid overlap
-                  view === "days" && i % 3 !== 0 && !isLast ? "hidden sm:block" : "",
+                  view !== "months" && i % 2 !== 0 && !isLast ? "hidden sm:block" : "",
                 ].join(" ")}
               >
                 {bar.label}

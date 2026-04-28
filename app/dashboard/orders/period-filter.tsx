@@ -18,11 +18,7 @@ export function PeriodFilter() {
 
   function handleClick(period: Period) {
     const params = new URLSearchParams(searchParams.toString());
-    if (period === "all") {
-      params.delete("period");
-    } else {
-      params.set("period", period);
-    }
+    params.set("period", period);
     const qs = params.toString();
     router.push(`/dashboard/orders${qs ? `?${qs}` : ""}`);
   }

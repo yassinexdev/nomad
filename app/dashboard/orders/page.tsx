@@ -1,11 +1,14 @@
 import { getOrders } from "@/lib/orders-db";
 import type { OrderRow } from "@/lib/orders-db";
+import { isDashboardAuthed } from "@/lib/dashboard-auth";
 import { LogoutButton } from "./logout-button";
 import { PeriodFilter } from "./period-filter";
 import type { Period } from "./period-filter";
 import { RevenueChart } from "./revenue-chart";
 import { ExportCsvButton } from "./export-csv-button";
+import { OrderRowActions } from "./order-row-actions";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -95,25 +98,165 @@ function getPeriodLabel(period: Period): string {
   }
 }
 
+function parseYmdToLocalDate(ymd: string): Date | null {
+  // Expect "YYYY-MM-DD"
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return null;
+  const d = new Date(year, month - 1, day);
+  if (Number.isNaN(d.getTime())) return null;
+  return d;
+}
+
+function startOfLocalDay(d: Date) {
+  const out = new Date(d);
+  out.setHours(0, 0, 0, 0);
+  return out;
+}
+
+function endOfLocalDay(d: Date) {
+  const out = new Date(d);
+  out.setHours(23, 59, 59, 999);
+  return out;
+}
+
+function filterOrdersByTimeWindow(orders: OrderRow[], opts: { period: Period; from?: string; to?: string }) {
+  const fromDate = opts.from ? parseYmdToLocalDate(opts.from) : null;
+  const toDate = opts.to ? parseYmdToLocalDate(opts.to) : null;
+
+  const rangeStart = fromDate ? startOfLocalDay(fromDate) : getStartOfPeriod(opts.period);
+  const rangeEnd = toDate ? endOfLocalDay(toDate) : null;
+
+  if (!rangeStart && !rangeEnd) return orders;
+  return orders.filter((o) => {
+    const t = new Date(o.created_at).getTime();
+    if (Number.isNaN(t)) return false;
+    if (rangeStart && t < rangeStart.getTime()) return false;
+    if (rangeEnd && t > rangeEnd.getTime()) return false;
+    return true;
+  });
+}
+
+type OrderStatus = OrderRow["status"];
+
+function computeOrderKpis(ordersInPeriod: OrderRow[]) {
+  const counts: Record<OrderStatus, number> = {
+    new: 0,
+    confirmed: 0,
+    shipped: 0,
+    delivered: 0,
+    cancelled: 0,
+  };
+
+  for (const o of ordersInPeriod) {
+    counts[o.status] = (counts[o.status] ?? 0) + 1;
+  }
+
+  const total = ordersInPeriod.length;
+  const inProgress = counts.new + counts.confirmed + counts.shipped;
+  const nonCancelled = total - counts.cancelled;
+  const deliveryRate = nonCancelled > 0 ? counts.delivered / nonCancelled : 0;
+  const cancelRate = total > 0 ? counts.cancelled / total : 0;
+  const totalRevenue = ordersInPeriod.reduce((sum, o) => sum + o.total_price, 0);
+  const avgOrderValue = total > 0 ? totalRevenue / total : 0;
+
+  return { counts, total, inProgress, deliveryRate, cancelRate, totalRevenue, avgOrderValue };
+}
+
+function computeProductPerformance(ordersInPeriod: OrderRow[], topN = 10) {
+  const byProduct = new Map<string, { product_code: string; revenue: number; qty: number; lines: number }>();
+  for (const o of ordersInPeriod) {
+    const key = o.product_code || "—";
+    const prev = byProduct.get(key) ?? { product_code: key, revenue: 0, qty: 0, lines: 0 };
+    prev.revenue += o.total_price;
+    prev.qty += o.qty;
+    prev.lines += 1;
+    byProduct.set(key, prev);
+  }
+
+  const rows = Array.from(byProduct.values()).sort((a, b) => b.revenue - a.revenue).slice(0, topN);
+  const maxRevenue = Math.max(...rows.map((r) => r.revenue), 1);
+  return { rows, maxRevenue };
+}
+
+function normalizeQueryText(input: string) {
+  return input.trim().toLowerCase();
+}
+
 export default async function OrdersDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ period?: string }>;
+  searchParams: Promise<{
+    period?: string;
+    q?: string;
+    status?: string;
+    sort?: string;
+    dir?: string;
+    from?: string;
+    to?: string;
+  }>;
 }) {
+  if (!(await isDashboardAuthed())) {
+    redirect("/dashboard/login");
+  }
+
   const params = await searchParams;
-  const period = (params.period as Period) || "all";
+  const period = (params.period as Period) || "today";
+  const q = typeof params.q === "string" ? params.q : "";
+  const statusFilter = typeof params.status === "string" ? params.status : "";
+  const sortKey = typeof params.sort === "string" ? params.sort : "date";
+  const sortDir = params.dir === "asc" ? "asc" : "desc";
+  const from = typeof params.from === "string" ? params.from : "";
+  const to = typeof params.to === "string" ? params.to : "";
 
-  const allOrders = await getOrders();
+  let allOrders: OrderRow[] = [];
+  let ordersError: string | null = null;
+  try {
+    allOrders = await getOrders();
+  } catch (e) {
+    ordersError = e instanceof Error ? e.message : "Erreur de chargement des commandes";
+  }
 
-  // Filter by period
-  const startDate = getStartOfPeriod(period);
-  const orders = startDate
-    ? allOrders.filter((o) => new Date(o.created_at) >= startDate)
-    : allOrders;
+  const ordersInPeriod = filterOrdersByTimeWindow(allOrders, { period, from: from || undefined, to: to || undefined });
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total_price, 0);
-  const totalQty = orders.reduce((sum, o) => sum + o.qty, 0);
-  const cities = new Set(orders.map((o) => o.city)).size;
+  const kpis = computeOrderKpis(ordersInPeriod);
+  const productPerf = computeProductPerformance(ordersInPeriod, 10);
+
+  const qNorm = normalizeQueryText(q);
+  const statusAllowed = new Set<OrderStatus>(["new", "confirmed", "shipped", "delivered", "cancelled"]);
+
+  const tableOrders = ordersInPeriod
+    .filter((o) => {
+      if (statusFilter && statusAllowed.has(statusFilter as OrderStatus)) {
+        if (o.status !== (statusFilter as OrderStatus)) return false;
+      }
+      if (!qNorm) return true;
+      const hay = [
+        o.product_code,
+        o.city,
+        o.phone,
+        o.name ?? "",
+        o.notes ?? "",
+        o.size,
+      ]
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(qNorm);
+    })
+    .sort((a, b) => {
+      const dirMul = sortDir === "asc" ? 1 : -1;
+      if (sortKey === "total") return dirMul * (a.total_price - b.total_price);
+      if (sortKey === "city") return dirMul * a.city.localeCompare(b.city);
+      if (sortKey === "status") return dirMul * a.status.localeCompare(b.status);
+      // default: date
+      return dirMul * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    });
+
+  const totalQty = ordersInPeriod.reduce((sum, o) => sum + o.qty, 0);
+  const cities = new Set(ordersInPeriod.map((o) => o.city)).size;
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
@@ -149,10 +292,17 @@ export default async function OrdersDashboardPage({
           </Suspense>
         </div>
 
+        {ordersError ? (
+          <div className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-amber-200">
+            <p className="font-semibold">Impossible de charger les commandes</p>
+            <p className="mt-1 text-xs text-amber-200/80">{ordersError}</p>
+          </div>
+        ) : null}
+
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
-          <StatCard label="Commandes" value={orders.length} sub={getPeriodLabel(period)} accent="text-white" />
-          <StatCard label="Chiffre d'affaires" value={`${totalRevenue.toLocaleString()} DH`} sub={getPeriodLabel(period)} accent="text-emerald-400" />
+          <StatCard label="Commandes" value={ordersInPeriod.length} sub={getPeriodLabel(period)} accent="text-white" />
+          <StatCard label="Chiffre d'affaires" value={`${kpis.totalRevenue.toLocaleString()} DH`} sub={getPeriodLabel(period)} accent="text-emerald-400" />
           <StatCard label="Articles vendus" value={totalQty} sub="Total paires" />
           <StatCard label="Villes" value={cities} sub="Villes distinctes" />
         </div>
@@ -162,24 +312,240 @@ export default async function OrdersDashboardPage({
           <RevenueChart orders={allOrders} />
         </div>
 
+        {/* KPIs + Top products */}
+        <div className="grid gap-6 lg:grid-cols-2 mb-8">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-white">Indicateurs par période</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">Basés sur la période (sans recherche/statut du tableau)</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-zinc-500">Panier moyen</p>
+                <p className="text-sm font-bold text-white">{Math.round(kpis.avgOrderValue).toLocaleString()} DH</p>
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <StatCard label="Nouveau" value={kpis.counts.new} />
+              <StatCard label="Confirmé" value={kpis.counts.confirmed} />
+              <StatCard label="Expédié" value={kpis.counts.shipped} />
+              <StatCard label="Livré" value={kpis.counts.delivered} accent="text-emerald-400" />
+              <StatCard label="Annulé" value={kpis.counts.cancelled} accent="text-red-300" />
+              <StatCard label="En cours" value={kpis.inProgress} />
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
+                <p className="text-xs text-zinc-500">Taux livraison</p>
+                <p className="text-sm font-bold text-white">{Math.round(kpis.deliveryRate * 100)}%</p>
+              </div>
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
+                <p className="text-xs text-zinc-500">Taux annulation</p>
+                <p className="text-sm font-bold text-white">{Math.round(kpis.cancelRate * 100)}%</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h3 className="text-sm font-semibold text-white">Performance produits</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">Top 10 par chiffre d'affaires</p>
+              </div>
+            </div>
+
+            {productPerf.rows.length === 0 ? (
+              <p className="text-xs text-zinc-500">Aucune donnée.</p>
+            ) : (
+              <div className="space-y-2">
+                {productPerf.rows.map((p) => {
+                  const pct = (p.revenue / productPerf.maxRevenue) * 100;
+                  return (
+                    <div key={p.product_code} className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs font-semibold text-white truncate">{p.product_code}</p>
+                        <p className="text-xs font-bold text-emerald-300 whitespace-nowrap">{p.revenue.toLocaleString()} DH</p>
+                      </div>
+                      <div className="mt-2 h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
+                        <div className="h-full rounded-full bg-emerald-600/80" style={{ width: `${Math.max(4, pct)}%` }} />
+                      </div>
+                      <div className="mt-2 flex items-center justify-between text-[11px] text-zinc-500">
+                        <span>{p.lines} cmd</span>
+                        <span>{p.qty} qt</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Filters */}
+        <form method="get" className="mb-4 flex flex-col gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <input type="hidden" name="period" value={period} />
+            <div className="flex-1 min-w-[220px]">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">Recherche</label>
+              <input
+                name="q"
+                defaultValue={q}
+                placeholder="Produit, ville, téléphone, nom…"
+                className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
+              />
+            </div>
+
+            <div className="min-w-[190px]">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">Statut</label>
+              <select
+                name="status"
+                defaultValue={statusFilter}
+                className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs font-semibold text-zinc-200 outline-none hover:border-zinc-600"
+              >
+                <option value="">Tous</option>
+                <option value="new">Nouveau</option>
+                <option value="confirmed">Confirmé</option>
+                <option value="shipped">Expédié</option>
+                <option value="delivered">Livré</option>
+                <option value="cancelled">Annulé</option>
+              </select>
+            </div>
+
+            <div className="min-w-[190px]">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">Tri</label>
+              <select
+                name="sort"
+                defaultValue={sortKey}
+                className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs font-semibold text-zinc-200 outline-none hover:border-zinc-600"
+              >
+                <option value="date">Date</option>
+                <option value="total">Total</option>
+                <option value="city">Ville</option>
+                <option value="status">Statut</option>
+              </select>
+            </div>
+
+            <div className="min-w-[140px]">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">Direction</label>
+              <select
+                name="dir"
+                defaultValue={sortDir}
+                className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs font-semibold text-zinc-200 outline-none hover:border-zinc-600"
+              >
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="min-w-[180px]">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">De</label>
+              <input
+                type="date"
+                name="from"
+                defaultValue={from}
+                className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
+              />
+            </div>
+            <div className="min-w-[180px]">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">À</label>
+              <input
+                type="date"
+                name="to"
+                defaultValue={to}
+                className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs text-zinc-200 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="submit"
+                className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 hover:bg-emerald-500"
+              >
+                Appliquer
+              </button>
+              <a
+                href={`/dashboard/orders?period=${period}`}
+                className="h-9 inline-flex items-center rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs font-semibold text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-700 hover:text-white"
+              >
+                Réinitialiser
+              </a>
+            </div>
+          </div>
+        </form>
+
         {/* Table header */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-white">
             Liste des commandes{" "}
             <span className="ml-1.5 rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
-              {orders.length}
+              {tableOrders.length}
             </span>
           </h3>
-          <ExportCsvButton orders={orders} />
+          <ExportCsvButton orders={tableOrders} />
         </div>
 
-        {/* Table */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3">
+          {tableOrders.length === 0 ? (
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-center text-sm text-zinc-500">
+              Aucune commande {period !== "all" ? getPeriodLabel(period) : ""}.
+            </div>
+          ) : (
+            tableOrders.map((order) => (
+              <div key={order.id} className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs text-zinc-500">{formatDate(order.created_at)}</p>
+                    <p className="mt-1 text-sm font-bold text-white truncate">{order.product_code}</p>
+                    <p className="mt-0.5 text-xs text-zinc-400">
+                      EU {order.size} · {order.qty} · {order.city}
+                    </p>
+                  </div>
+                  <p className="text-sm font-bold text-emerald-400 whitespace-nowrap">{order.total_price} DH</p>
+                </div>
+
+                <div className="mt-3 grid grid-cols-1 gap-2">
+                  <p className="text-xs text-zinc-400 font-mono">{order.phone}</p>
+                  <p className="text-xs text-zinc-400">{order.name ?? <span className="text-zinc-600">—</span>}</p>
+                  <p className="text-xs text-zinc-500">{order.notes ?? <span className="text-zinc-700">—</span>}</p>
+                </div>
+
+                <div className="mt-3">
+                  <OrderRowActions
+                    orderId={order.id}
+                    phone={order.phone}
+                    initialStatus={order.status}
+                    initialNotes={order.notes}
+                    productCode={order.product_code}
+                    city={order.city}
+                    size={order.size}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block rounded-2xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-sm">
+            <table className="w-full min-w-[1060px] text-sm">
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/80">
-                  {["Date", "Produit", "Pointure", "Qté", "Ville", "Téléphone", "Nom", "Notes", "Total", "Langue"].map((h) => (
+                  {[
+                    "Date",
+                    "Produit",
+                    "Pointure",
+                    "Qté",
+                    "Ville",
+                    "Téléphone",
+                    "Nom",
+                    "Notes",
+                    "Total",
+                    "Actions",
+                  ].map((h) => (
                     <th
                       key={h}
                       className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 first:rounded-tl-2xl last:rounded-tr-2xl"
@@ -190,17 +556,17 @@ export default async function OrdersDashboardPage({
                 </tr>
               </thead>
               <tbody>
-                {orders.length === 0 ? (
+                {tableOrders.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="px-4 py-12 text-center text-zinc-600">
                       Aucune commande {period !== "all" ? getPeriodLabel(period) : ""}.
                     </td>
                   </tr>
                 ) : (
-                  orders.map((order: OrderRow, i: number) => (
+                  tableOrders.map((order: OrderRow, i: number) => (
                     <tr
                       key={order.id}
-                      className={`border-b border-zinc-800/60 transition-colors hover:bg-zinc-800/30 ${
+                      className={`border-b border-zinc-800/60 align-top transition-colors hover:bg-zinc-800/30 ${
                         i === 0 ? "bg-emerald-500/5" : ""
                       }`}
                     >
@@ -216,17 +582,25 @@ export default async function OrdersDashboardPage({
                         </span>
                       </td>
                       <td className="px-4 py-3 text-zinc-300">{order.qty}</td>
-                      <td className="px-4 py-3 text-zinc-300 capitalize">{order.city}</td>
+                      <td className="px-4 py-3 text-zinc-300">{order.city}</td>
                       <td className="px-4 py-3 text-zinc-300 font-mono text-xs">{order.phone}</td>
                       <td className="px-4 py-3 text-zinc-400">{order.name ?? <span className="text-zinc-600">—</span>}</td>
-                      <td className="px-4 py-3 max-w-[200px] truncate text-zinc-500 text-xs" title={order.notes ?? ""}>
+                      <td className="px-4 py-3 max-w-[240px] truncate text-zinc-500 text-xs" title={order.notes ?? ""}>
                         {order.notes ?? <span className="text-zinc-700">—</span>}
                       </td>
-                      <td className="px-4 py-3 font-semibold text-emerald-400">
+                      <td className="px-4 py-3 font-semibold text-emerald-400 whitespace-nowrap">
                         {order.total_price} DH
                       </td>
-                      <td className="px-4 py-3">
-                        <LocaleBadge locale={order.locale} />
+                      <td className="px-4 py-3 min-w-[280px]">
+                        <OrderRowActions
+                          orderId={order.id}
+                          phone={order.phone}
+                          initialStatus={order.status}
+                          initialNotes={order.notes}
+                          productCode={order.product_code}
+                          city={order.city}
+                          size={order.size}
+                        />
                       </td>
                     </tr>
                   ))
