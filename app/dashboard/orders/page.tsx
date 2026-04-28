@@ -1,5 +1,5 @@
-import { getOrders } from "@/lib/orders-db";
-import type { OrderRow } from "@/lib/orders-db";
+import { getOrders, getRevenueChartSeries } from "@/lib/orders-db";
+import type { OrderRow, RevenueChartSeries } from "@/lib/orders-db";
 import { isDashboardAuthed } from "@/lib/dashboard-auth";
 import { LogoutButton } from "./logout-button";
 import { PeriodFilter } from "./period-filter";
@@ -213,9 +213,15 @@ export default async function OrdersDashboardPage({
   const to = typeof params.to === "string" ? params.to : "";
 
   let allOrders: OrderRow[] = [];
+  let chartSeries: RevenueChartSeries = { days: [], weeks: [], months: [] };
   let ordersError: string | null = null;
   try {
-    allOrders = await getOrders();
+    const [fetchedOrders, fetchedSeries] = await Promise.all([
+      getOrders(),
+      getRevenueChartSeries(),
+    ]);
+    allOrders = fetchedOrders;
+    chartSeries = fetchedSeries;
   } catch (e) {
     ordersError = e instanceof Error ? e.message : "Erreur de chargement des commandes";
   }
@@ -309,7 +315,7 @@ export default async function OrdersDashboardPage({
 
         {/* Revenue chart */}
         <div className="mb-8">
-          <RevenueChart series={revenueSeries} />
+          <RevenueChart series={chartSeries} />
         </div>
 
         {/* KPIs + Top products */}
