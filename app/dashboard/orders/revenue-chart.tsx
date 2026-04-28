@@ -1,121 +1,9 @@
 "use client";
 
-import type { OrderRow } from "@/lib/orders-db";
-import { useMemo, useState } from "react";
-
-type BarData = {
-  label: string;
-  revenue: number;
-  orders: number;
-};
+import type { RevenueChartSeries } from "@/lib/orders-db";
+import { useState } from "react";
 
 type ChartView = "days" | "weeks" | "months";
-
-function buildDailyData(orders: OrderRow[], days: number): BarData[] {
-  const now = new Date();
-  const result: BarData[] = [];
-
-  const byDay = new Map<string, { revenue: number; orders: number }>();
-  for (const o of orders) {
-    const key = new Date(o.created_at).toISOString().slice(0, 10);
-    const prev = byDay.get(key) ?? { revenue: 0, orders: 0 };
-    prev.revenue += o.total_price;
-    prev.orders += 1;
-    byDay.set(key, prev);
-  }
-
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    const label = new Intl.DateTimeFormat("fr-MA", {
-      day: "2-digit",
-      month: "short",
-    }).format(d);
-    const agg = byDay.get(key);
-    result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
-  }
-
-  return result;
-}
-
-function startOfWeekMonday(d: Date) {
-  const out = new Date(d);
-  out.setHours(0, 0, 0, 0);
-  const day = out.getDay(); // 0..6 (Sun..Sat)
-  const diff = day === 0 ? 6 : day - 1; // Monday-based
-  out.setDate(out.getDate() - diff);
-  return out;
-}
-
-function getYearWeekKey(d: Date) {
-  // ISO-ish week key based on Monday start; sufficient for chart grouping.
-  const start = startOfWeekMonday(d);
-  const year = start.getFullYear();
-  const jan4 = new Date(year, 0, 4);
-  const week1 = startOfWeekMonday(jan4);
-  const week = Math.floor((start.getTime() - week1.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
-  const padded = String(week).padStart(2, "0");
-  return `${year}-W${padded}`;
-}
-
-function buildWeeklyData(orders: OrderRow[], weeks: number): BarData[] {
-  const now = new Date();
-  const result: BarData[] = [];
-
-  const byWeek = new Map<string, { revenue: number; orders: number }>();
-  for (const o of orders) {
-    const od = new Date(o.created_at);
-    const key = getYearWeekKey(od);
-    const prev = byWeek.get(key) ?? { revenue: 0, orders: 0 };
-    prev.revenue += o.total_price;
-    prev.orders += 1;
-    byWeek.set(key, prev);
-  }
-
-  const currentWeekStart = startOfWeekMonday(now);
-  for (let i = weeks - 1; i >= 0; i--) {
-    const ws = new Date(currentWeekStart);
-    ws.setDate(ws.getDate() - i * 7);
-    const key = getYearWeekKey(ws);
-    const label = new Intl.DateTimeFormat("fr-MA", {
-      day: "2-digit",
-      month: "short",
-    }).format(ws);
-    const agg = byWeek.get(key);
-    result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
-  }
-
-  return result;
-}
-
-function buildMonthlyData(orders: OrderRow[]): BarData[] {
-  const now = new Date();
-  const result: BarData[] = [];
-
-  const byMonth = new Map<string, { revenue: number; orders: number }>();
-  for (const o of orders) {
-    const od = new Date(o.created_at);
-    const key = `${od.getFullYear()}-${String(od.getMonth() + 1).padStart(2, "0")}`;
-    const prev = byMonth.get(key) ?? { revenue: 0, orders: 0 };
-    prev.revenue += o.total_price;
-    prev.orders += 1;
-    byMonth.set(key, prev);
-  }
-
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const yearMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = new Intl.DateTimeFormat("fr-MA", {
-      month: "short",
-      year: "2-digit",
-    }).format(d);
-    const agg = byMonth.get(yearMonth);
-    result.push({ label, revenue: agg?.revenue ?? 0, orders: agg?.orders ?? 0 });
-  }
-
-  return result;
-}
 
 const VIEW_OPTIONS: { key: ChartView; label: string }[] = [
   { key: "days", label: "30 jours" },
@@ -123,18 +11,9 @@ const VIEW_OPTIONS: { key: ChartView; label: string }[] = [
   { key: "months", label: "12 mois" },
 ];
 
-export function RevenueChart({ orders }: { orders: OrderRow[] }) {
+export function RevenueChart({ series }: { series: RevenueChartSeries }) {
   const [view, setView] = useState<ChartView>("days");
-
-  const data = useMemo(
-    () =>
-      view === "days"
-        ? buildDailyData(orders, 30)
-        : view === "weeks"
-          ? buildWeeklyData(orders, 12)
-          : buildMonthlyData(orders),
-    [orders, view],
-  );
+  const data = series[view];
   const maxRevenue = Math.max(...data.map((d) => d.revenue), 1);
   const totalRevenue = data.reduce((sum, d) => sum + d.revenue, 0);
   const totalOrders = data.reduce((sum, d) => sum + d.orders, 0);

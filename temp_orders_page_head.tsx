@@ -1,4 +1,4 @@
-import { getOrders } from "@/lib/orders-db";
+﻿import { getOrders } from "@/lib/orders-db";
 import type { OrderRow } from "@/lib/orders-db";
 import { isDashboardAuthed } from "@/lib/dashboard-auth";
 import { LogoutButton } from "./logout-button";
@@ -169,7 +169,7 @@ function computeOrderKpis(ordersInPeriod: OrderRow[]) {
 function computeProductPerformance(ordersInPeriod: OrderRow[], topN = 10) {
   const byProduct = new Map<string, { product_code: string; revenue: number; qty: number; lines: number }>();
   for (const o of ordersInPeriod) {
-    const key = o.product_code || "—";
+    const key = o.product_code || "ÔÇö";
     const prev = byProduct.get(key) ?? { product_code: key, revenue: 0, qty: 0, lines: 0 };
     prev.revenue += o.total_price;
     prev.qty += o.qty;
@@ -309,7 +309,7 @@ export default async function OrdersDashboardPage({
 
         {/* Revenue chart */}
         <div className="mb-8">
-          <RevenueChart series={revenueSeries} />
+          <RevenueChart orders={allOrders} />
         </div>
 
         {/* KPIs + Top products */}
@@ -317,8 +317,8 @@ export default async function OrdersDashboardPage({
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-sm font-semibold text-white">Indicateurs par période</h3>
-                <p className="text-xs text-zinc-500 mt-0.5">Basés sur la période (sans recherche/statut du tableau)</p>
+                <h3 className="text-sm font-semibold text-white">Indicateurs par p├®riode</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">Bas├®s sur la p├®riode (sans recherche/statut du tableau)</p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-zinc-500">Panier moyen</p>
@@ -328,10 +328,10 @@ export default async function OrdersDashboardPage({
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               <StatCard label="Nouveau" value={kpis.counts.new} />
-              <StatCard label="Confirmé" value={kpis.counts.confirmed} />
-              <StatCard label="Expédié" value={kpis.counts.shipped} />
-              <StatCard label="Livré" value={kpis.counts.delivered} accent="text-emerald-400" />
-              <StatCard label="Annulé" value={kpis.counts.cancelled} accent="text-red-300" />
+              <StatCard label="Confirm├®" value={kpis.counts.confirmed} />
+              <StatCard label="Exp├®di├®" value={kpis.counts.shipped} />
+              <StatCard label="Livr├®" value={kpis.counts.delivered} accent="text-emerald-400" />
+              <StatCard label="Annul├®" value={kpis.counts.cancelled} accent="text-red-300" />
               <StatCard label="En cours" value={kpis.inProgress} />
             </div>
 
@@ -356,7 +356,7 @@ export default async function OrdersDashboardPage({
             </div>
 
             {productPerf.rows.length === 0 ? (
-              <p className="text-xs text-zinc-500">Aucune donnée.</p>
+              <p className="text-xs text-zinc-500">Aucune donn├®e.</p>
             ) : (
               <div className="space-y-2">
                 {productPerf.rows.map((p) => {
@@ -391,7 +391,7 @@ export default async function OrdersDashboardPage({
               <input
                 name="q"
                 defaultValue={q}
-                placeholder="Produit, ville, téléphone, nom…"
+                placeholder="Produit, ville, t├®l├®phone, nomÔÇª"
                 className="h-9 w-full rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
               />
             </div>
@@ -405,10 +405,10 @@ export default async function OrdersDashboardPage({
               >
                 <option value="">Tous</option>
                 <option value="new">Nouveau</option>
-                <option value="confirmed">Confirmé</option>
-                <option value="shipped">Expédié</option>
-                <option value="delivered">Livré</option>
-                <option value="cancelled">Annulé</option>
+                <option value="confirmed">Confirm├®</option>
+                <option value="shipped">Exp├®di├®</option>
+                <option value="delivered">Livr├®</option>
+                <option value="cancelled">Annul├®</option>
               </select>
             </div>
 
@@ -450,7 +450,7 @@ export default async function OrdersDashboardPage({
               />
             </div>
             <div className="min-w-[180px]">
-              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">À</label>
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-1">├Ç</label>
               <input
                 type="date"
                 name="to"
@@ -469,7 +469,7 @@ export default async function OrdersDashboardPage({
                 href={`/dashboard/orders?period=${period}`}
                 className="h-9 inline-flex items-center rounded-xl border border-zinc-700 bg-zinc-800/60 px-3 text-xs font-semibold text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-700 hover:text-white"
               >
-                Réinitialiser
+                R├®initialiser
               </a>
             </div>
           </div>
@@ -500,7 +500,7 @@ export default async function OrdersDashboardPage({
                     <p className="text-xs text-zinc-500">{formatDate(order.created_at)}</p>
                     <p className="mt-1 text-sm font-bold text-white truncate">{order.product_code}</p>
                     <p className="mt-0.5 text-xs text-zinc-400">
-                      EU {order.size} · {order.qty} · {order.city}
+                      EU {order.size} ┬À {order.qty} ┬À {order.city}
                     </p>
                   </div>
                   <p className="text-sm font-bold text-emerald-400 whitespace-nowrap">{order.total_price} DH</p>
@@ -508,8 +508,8 @@ export default async function OrdersDashboardPage({
 
                 <div className="mt-3 grid grid-cols-1 gap-2">
                   <p className="text-xs text-zinc-400 font-mono">{order.phone}</p>
-                  <p className="text-xs text-zinc-400">{order.name ?? <span className="text-zinc-600">—</span>}</p>
-                  <p className="text-xs text-zinc-500">{order.notes ?? <span className="text-zinc-700">—</span>}</p>
+                  <p className="text-xs text-zinc-400">{order.name ?? <span className="text-zinc-600">ÔÇö</span>}</p>
+                  <p className="text-xs text-zinc-500">{order.notes ?? <span className="text-zinc-700">ÔÇö</span>}</p>
                 </div>
 
                 <div className="mt-3">
@@ -538,9 +538,9 @@ export default async function OrdersDashboardPage({
                     "Date",
                     "Produit",
                     "Pointure",
-                    "Qté",
+                    "Qt├®",
                     "Ville",
-                    "Téléphone",
+                    "T├®l├®phone",
                     "Nom",
                     "Notes",
                     "Total",
@@ -584,9 +584,9 @@ export default async function OrdersDashboardPage({
                       <td className="px-4 py-3 text-zinc-300">{order.qty}</td>
                       <td className="px-4 py-3 text-zinc-300">{order.city}</td>
                       <td className="px-4 py-3 text-zinc-300 font-mono text-xs">{order.phone}</td>
-                      <td className="px-4 py-3 text-zinc-400">{order.name ?? <span className="text-zinc-600">—</span>}</td>
+                      <td className="px-4 py-3 text-zinc-400">{order.name ?? <span className="text-zinc-600">ÔÇö</span>}</td>
                       <td className="px-4 py-3 max-w-[240px] truncate text-zinc-500 text-xs" title={order.notes ?? ""}>
-                        {order.notes ?? <span className="text-zinc-700">—</span>}
+                        {order.notes ?? <span className="text-zinc-700">ÔÇö</span>}
                       </td>
                       <td className="px-4 py-3 font-semibold text-emerald-400 whitespace-nowrap">
                         {order.total_price} DH
