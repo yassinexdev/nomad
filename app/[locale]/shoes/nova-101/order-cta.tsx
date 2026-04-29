@@ -118,7 +118,7 @@ export function OrderCta() {
       });
       setSubmitStatus("idle");
       setShowErrors(false);
-      router.push("/thank-you");
+      router.push("/thank-you?from=/shoes/nova-101");
     } catch (error) {
       console.error("Order submit error:", error);
       trackEvent("order_submit_failed", {
@@ -142,7 +142,7 @@ export function OrderCta() {
   }
 
   return (
-    <section id="order-section" className="mt-10 scroll-mt-28 space-y-6 md:scroll-mt-8">
+    <section id="order-section" className="mt-2 scroll-mt-28 space-y-6 md:scroll-mt-8">
       <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 shadow-sm ring-1 ring-zinc-900/5 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/40 dark:ring-white/5 sm:p-6">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
@@ -295,4 +295,3 @@ export function OrderCta() {
     </section>
   );
 }
-

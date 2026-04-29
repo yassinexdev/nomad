@@ -8,6 +8,7 @@ import { FaCheckCircle } from "react-icons/fa";
 
 type Props = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ from?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -20,10 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ThankYouPage({ params }: Props) {
+export default async function ThankYouPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const { from } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "ThankYou" });
+  const backToProduct = typeof from === "string" && from.startsWith("/shoes/") ? from : "/shoes/floria-279";
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6">
@@ -42,7 +45,7 @@ export default async function ThankYouPage({ params }: Props) {
       </p>
       <div className="mt-10 flex w-full max-w-sm flex-col gap-3 sm:flex-row sm:justify-center">
         <Link
-          href="/shoes/floria-279"
+          href={backToProduct}
           className={cn(
             buttonVariants({ variant: "orderCta", size: "lg" }),
             "w-full sm:w-auto sm:min-w-[10rem] motion-safe:animate-none"

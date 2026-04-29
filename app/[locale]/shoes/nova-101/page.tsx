@@ -88,4 +88,3 @@ export default async function Nova101Page({ params }: Props) {
     </>
   );
 }
-

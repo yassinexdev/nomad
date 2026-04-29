@@ -100,7 +100,7 @@ export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
       </Carousel>
 
       <div
-        className="flex gap-2 overflow-x-auto pb-0.5 pt-1"
+        className="flex gap-2 overflow-x-auto px-1 py-1"
         role="tablist"
         aria-label={t("galleryThumbnailsLabel")}
       >
@@ -113,7 +113,7 @@ export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
             aria-label={t("gallerySlideGoTo", { number: index + 1 })}
             onClick={() => api?.scrollTo(index)}
             className={cn(
-              "relative size-14 shrink-0 overflow-hidden rounded-lg ring-2 ring-offset-2 ring-offset-white transition dark:ring-offset-zinc-950",
+              "relative size-14 shrink-0 overflow-hidden rounded-lg ring-2 ring-offset-2 ring-offset-white transition sm:size-16 dark:ring-offset-zinc-950",
               selected === index
                 ? "ring-emerald-600"
                 : "ring-transparent hover:ring-zinc-300 dark:hover:ring-zinc-600"
@@ -123,10 +123,10 @@ export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
               <Image
                 src={item.src}
                 alt=""
-                width={56}
-                height={56}
+                width={64}
+                height={64}
                 className="size-full object-cover"
-                sizes="56px"
+                sizes="(max-width: 640px) 56px, 64px"
               />
             ) : (
               <div className="flex size-full items-center justify-center bg-zinc-800 text-white">
