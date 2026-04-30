@@ -11,7 +11,7 @@ import { trackAddToCart, trackInitiateCheckout } from "@/components/analytics/me
 import { useMemo, useRef, useState } from "react";
 
 const PRODUCT_CODE = "Nova #101";
-export const UNIT_PRICE = 199;
+export const UNIT_PRICE = 200;
 
 function digitsOnlyPhone(raw: string | undefined): string {
   if (!raw) return "";
