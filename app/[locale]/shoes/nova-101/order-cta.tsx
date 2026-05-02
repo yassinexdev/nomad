@@ -39,6 +39,12 @@ export function OrderCta() {
   const direction = locale === "ar" ? "rtl" : "ltr";
   const rtlFields = locale === "ar";
 
+  const COLOR_VARIANTS = [
+    { id: "rouge", hex: "#DC2626", label: t("colorRed") },
+    { id: "jaune", hex: "#EAB308", label: t("colorYellow") },
+  ] as const;
+
+  const [color, setColor] = useState<string>("");
   const [size, setSize] = useState("");
   const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
@@ -53,7 +59,8 @@ export function OrderCta() {
 
   const cityLine = useMemo(() => city.trim(), [city]);
   const phoneLine = useMemo(() => digitsOnlyPhone(phone), [phone]);
-  const canSubmit = Boolean(size) && cityLine.length > 0 && phoneLine.length > 0;
+  const canSubmit = Boolean(color) && Boolean(size) && cityLine.length > 0 && phoneLine.length > 0;
+  const colorError = showErrors && !color;
   const sizeError = showErrors && !size;
   const cityError = showErrors && cityLine.length === 0;
   const phoneError = showErrors && phoneLine.length === 0;
@@ -84,6 +91,7 @@ export function OrderCta() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           productCode: PRODUCT_CODE,
+          color,
           size,
           qty: qtyNumber,
           city: cityLine,
@@ -103,6 +111,7 @@ export function OrderCta() {
 
       trackEvent("order_submitted", {
         product: PRODUCT_CODE,
+        color,
         locale,
         city: cityLine || "unknown",
         quantity: qtyNumber,
@@ -160,6 +169,75 @@ export function OrderCta() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
+          {/* ── Color selector ── */}
+          <div className="flex flex-col gap-2.5 sm:col-span-2">
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {t("colorLabel")}
+              </p>
+              {color && (
+                <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                  — {COLOR_VARIANTS.find((cv) => cv.id === color)?.label}
+                </span>
+              )}
+              {colorError && (
+                <span className="text-xs text-red-500 dark:text-red-400">
+                  ({t("colorRequired")})
+                </span>
+              )}
+            </div>
+            <div className="flex gap-3" role="radiogroup" aria-label={t("colorLabel")}>
+              {COLOR_VARIANTS.map((cv) => {
+                const isSelected = color === cv.id;
+                return (
+                  <button
+                    key={cv.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    aria-label={cv.label}
+                    onClick={() => {
+                      setColor(cv.id);
+                      trackFieldFill("color", true);
+                    }}
+                    style={isSelected ? { boxShadow: `0 0 0 3px white, 0 0 0 5px ${cv.hex}` } : undefined}
+                    className={[
+                      "relative size-9 shrink-0 rounded-full border-2 transition-all duration-200",
+                      "hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+                      isSelected
+                        ? "border-transparent scale-110"
+                        : "border-white/80 dark:border-zinc-800 hover:border-transparent",
+                      colorError ? "ring-2 ring-red-400 ring-offset-1" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    <span
+                      className="absolute inset-0 rounded-full"
+                      style={{ backgroundColor: cv.hex }}
+                      aria-hidden
+                    />
+                    {isSelected && (
+                      <span className="absolute inset-0 flex items-center justify-center" aria-hidden>
+                        <svg viewBox="0 0 12 12" className="size-4 drop-shadow-sm" fill="none">
+                          <path
+                            d="M2.5 6.5l2.5 2.5 4.5-5"
+                            stroke="white"
+                            strokeWidth="1.75"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+
+          {/* ── Size selector ── */}
           <div className="flex flex-col gap-3 text-sm font-medium text-zinc-800 dark:text-zinc-200 sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{t("sizeLabel")}</p>
             <RadioGroup
