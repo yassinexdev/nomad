@@ -39,16 +39,17 @@ export async function POST(request: Request) {
       totalPrice,
     };
 
-    try {
-      await createOrder(order);
-    } catch (error) {
-      console.error("Order database save failed (DATABASE_URL may be missing):", error);
-    }
+    // Run DB write and email notification in parallel — cuts response time roughly in half
+    const [dbResult, notifResult] = await Promise.allSettled([
+      createOrder(order),
+      sendOrderNotification(order),
+    ]);
 
-    try {
-      await sendOrderNotification(order);
-    } catch (error) {
-      console.error("Order notification failed", error);
+    if (dbResult.status === "rejected") {
+      console.error("Order database save failed (DATABASE_URL may be missing):", dbResult.reason);
+    }
+    if (notifResult.status === "rejected") {
+      console.error("Order notification failed:", notifResult.reason);
     }
 
     return NextResponse.json({ ok: true });
