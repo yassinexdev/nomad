@@ -21,6 +21,19 @@
     "trustTitle": "ثقة عملائنا",
     "trustSubtitle": "خدمة بسيطة وسريعة وبدون مفاجآت."
   },
+  "ShoesCategory": {
+    "metadataTitle": "أحذية جلدية | Zed Market",
+    "metadataDescription": "اكتشف مجموعتنا من الأحذية الجلدية — توصيل مجاني في المغرب، الدفع عند الاستلام.",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbCategory": "الأحذية",
+    "heroTitle": "مجموعة",
+    "heroTitleAccent": "الأحذية",
+    "heroSubtitle": "اكتشف تشكيلتنا من الأحذية الجلدية الأصيلة، مع توصيل مجاني لجميع مدن المغرب.",
+    "productCount": "الموديلات المتاحة",
+    "collectionTitle": "جميع موديلاتنا",
+    "collectionSubtitle": "اختر موديلك واطلب بنقرات قليلة.",
+    "tagLeather": "جلد"
+  },
   "LocaleSwitcher": {
     "label": "اللغة",
     "fr": "FR",

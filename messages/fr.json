@@ -21,6 +21,19 @@
     "trustTitle": "La confiance de nos clients",
     "trustSubtitle": "Un service simple, rapide et sans surprise."
   },
+  "ShoesCategory": {
+    "metadataTitle": "Chaussures en cuir | Zed Market",
+    "metadataDescription": "Découvrez notre collection de chaussures en cuir — livraison gratuite au Maroc, paiement à la livraison.",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbCategory": "Chaussures",
+    "heroTitle": "Collection",
+    "heroTitleAccent": "Chaussures",
+    "heroSubtitle": "Découvrez notre sélection de chaussures en cuir véritable, livrées gratuitement partout au Maroc.",
+    "productCount": "Modèles disponibles",
+    "collectionTitle": "Tous nos modèles",
+    "collectionSubtitle": "Choisissez votre modèle et passez commande en quelques clics.",
+    "tagLeather": "Cuir"
+  },
   "LocaleSwitcher": {
     "label": "Langue",
     "fr": "FR",
