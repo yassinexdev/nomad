@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { FaCheckCircle, FaMoneyBillWave, FaTruck } from "react-icons/fa";
-import { OrderCta, UNIT_PRICE } from "./order-cta";
+import { OrderCta, UNIT_PRICE, PRODUCT_CODE } from "./order-cta";
+import { WhatsAppFloat } from "@/components/whatsapp-float";
 
 export function ProductNovaClient() {
   const t = useTranslations("ProductNova101");
@@ -10,7 +11,8 @@ export function ProductNovaClient() {
   const bullets = t.raw("bullets") as string[];
 
   return (
-    <div className="flex flex-col gap-4 md:sticky md:top-8">
+    <>
+      <div className="flex flex-col gap-4 md:sticky md:top-8">
       <div>
         <div className="flex flex-col gap-1">
           <h1 className="inline-flex items-baseline gap-2 text-3xl font-semibold tracking-tight text-foreground">
@@ -59,6 +61,8 @@ export function ProductNovaClient() {
           <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">{t("qualityBadge.description")}</p>
         </div>
       </div>
-    </div>
+      </div>
+      <WhatsAppFloat productName={PRODUCT_CODE} />
+    </>
   );
 }

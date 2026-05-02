@@ -10,7 +10,7 @@ import { FaMapMarkerAlt, FaPhone, FaShoppingBag, FaUser } from "react-icons/fa";
 import { trackAddToCart, trackInitiateCheckout } from "@/components/analytics/meta-pixel-events";
 import { useMemo, useRef, useState } from "react";
 
-const PRODUCT_CODE = "Nova #101";
+export const PRODUCT_CODE = "Nova #101";
 export const UNIT_PRICE = 200;
 
 function digitsOnlyPhone(raw: string | undefined): string {

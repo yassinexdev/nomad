@@ -1,5 +1,4 @@
 import { SiteFooter } from "@/components/site-footer";
-import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { routing } from "@/i18n/routing";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -37,7 +36,6 @@ export default async function LocaleLayout({ children, params }: Props) {
       >
         {children}
         <SiteFooter />
-        <WhatsAppFloat />
       </div>
     </NextIntlClientProvider>
   );

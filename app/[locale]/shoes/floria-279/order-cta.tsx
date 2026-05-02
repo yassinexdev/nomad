@@ -15,7 +15,7 @@ import {
 import { trackInitiateCheckout, trackAddToCart } from "@/components/analytics/meta-pixel-events";
 import { useMemo, useRef, useState } from "react";
 
-const PRODUCT_CODE = "Floria #279";
+export const PRODUCT_CODE = "Floria #279";
 export const UNIT_PRICE = 249;
 
 

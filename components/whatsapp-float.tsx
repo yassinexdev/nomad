@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "212600000000";
 
-export function WhatsAppFloat() {
+interface WhatsAppFloatProps {
+  productName?: string;
+}
+
+export function WhatsAppFloat({ productName }: WhatsAppFloatProps = {}) {
   const [visible, setVisible] = useState(false);
   const [pulse, setPulse] = useState(true);
 
@@ -19,7 +23,10 @@ export function WhatsAppFloat() {
     };
   }, []);
 
-  const message = encodeURIComponent("Bonjour, je suis intéressé par vos produits !");
+  const rawMessage = productName
+    ? `Bonjour, je suis intéressé par le produit : ${productName}`
+    : "Bonjour, je suis intéressé par vos produits !";
+  const message = encodeURIComponent(rawMessage);
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
 
   return (

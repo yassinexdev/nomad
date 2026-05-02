@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { FaCheckCircle, FaMoneyBillWave, FaTruck } from "react-icons/fa";
-import { OrderCta, UNIT_PRICE } from "./order-cta";
+import { OrderCta, UNIT_PRICE, PRODUCT_CODE } from "./order-cta";
+import { WhatsAppFloat } from "@/components/whatsapp-float";
 
 export function ProductFloriaClient() {
   const t = useTranslations("ProductFloria279");
@@ -69,6 +70,7 @@ export function ProductFloriaClient() {
           </div>
         </div>
       </div>
+      <WhatsAppFloat productName={PRODUCT_CODE} />
     </>
   );
 }
