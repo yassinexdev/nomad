@@ -22,7 +22,7 @@ Create a `.env.local` file with:
 
 ```bash
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_META_PIXEL_ID=1292727342192110
+NEXT_PUBLIC_META_PIXEL_ID=
 ```
 
 If `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set, Google Analytics is loaded automatically.
