@@ -8,28 +8,78 @@ function buildEmailHtml(order: NewOrder): string {
     timeStyle: "short",
   });
 
-  const rows = [
-    ["🛍️ Produit", order.productCode],
-    ["📐 Taille", order.size],
-    ["🔢 Quantité", String(order.qty)],
-    ["🏙️ Ville", order.city],
-    ["📞 Téléphone", order.phone],
-    ["👤 Nom", order.name || "—"],
-    ["📝 Notes", order.notes || "—"],
-    ["🌍 Langue", order.locale.toUpperCase()],
+  // ── Color variant helpers ───────────────────────────────────────────────────
+  // Maps the stored color id → { hex, label }. Extend as new variants are added.
+  const COLOR_META: Record<string, { hex: string; label: string }> = {
+    rouge:  { hex: "#DC2626", label: "Rouge" },
+    jaune:  { hex: "#EAB308", label: "Jaune" },
+    noir:   { hex: "#18181B", label: "Noir" },
+    blanc:  { hex: "#F4F4F5", label: "Blanc" },
+    bleu:   { hex: "#2563EB", label: "Bleu" },
+    vert:   { hex: "#16A34A", label: "Vert" },
+    rose:   { hex: "#EC4899", label: "Rose" },
+    orange: { hex: "#EA580C", label: "Orange" },
+  };
+
+  const colorMeta = order.color
+    ? (COLOR_META[order.color.toLowerCase()] ?? { hex: "#6B7280", label: order.color })
+    : null;
+
+  // ── Build table rows ────────────────────────────────────────────────────────
+  const staticRows: [string, string][] = [
+    ["🛍️ Produit",       order.productCode],
+    ["📐 Taille",        order.size],
+    ["🔢 Quantité",      String(order.qty)],
+    ["🏙️ Ville",         order.city],
+    ["📞 Téléphone",     order.phone],
+    ["👤 Nom",           order.name || "—"],
+    ["📝 Notes",         order.notes || "—"],
+    ["🌍 Langue",        order.locale.toUpperCase()],
     ["💰 Prix unitaire", `${order.unitPrice} DH`],
-    ["💵 Total", `${order.totalPrice} DH`],
+    ["💵 Total",         `${order.totalPrice} DH`],
   ];
 
-  const tableRows = rows
-    .map(
-      ([label, value]) => `
+  // Render a standard text row
+  function renderRow(label: string, value: string) {
+    return `
       <tr>
         <td style="padding:10px 16px;font-weight:600;color:#374151;background:#f9fafb;border-bottom:1px solid #e5e7eb;white-space:nowrap;">${label}</td>
         <td style="padding:10px 16px;color:#111827;border-bottom:1px solid #e5e7eb;">${value}</td>
-      </tr>`
-    )
-    .join("");
+      </tr>`;
+  }
+
+  // Render the special color swatch row (only when color is present)
+  function renderColorRow(meta: { hex: string; label: string }) {
+    return `
+      <tr>
+        <td style="padding:10px 16px;font-weight:600;color:#374151;background:#f9fafb;border-bottom:1px solid #e5e7eb;white-space:nowrap;">🎨 Couleur</td>
+        <td style="padding:10px 16px;border-bottom:1px solid #e5e7eb;">
+          <span style="display:inline-flex;align-items:center;gap:8px;">
+            <span style="
+              display:inline-block;
+              width:18px;height:18px;
+              border-radius:50%;
+              background:${meta.hex};
+              border:2px solid rgba(0,0,0,0.12);
+              vertical-align:middle;
+              flex-shrink:0;
+            "></span>
+            <span style="color:#111827;font-weight:600;">${meta.label}</span>
+          </span>
+        </td>
+      </tr>`;
+  }
+
+  // Insert colour row right after the product row (index 0)
+  const allRows: string[] = [];
+  staticRows.forEach(([label, value], idx) => {
+    allRows.push(renderRow(label, value));
+    if (idx === 0 && colorMeta) {
+      allRows.push(renderColorRow(colorMeta));
+    }
+  });
+
+  const tableRows = allRows.join("");
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -73,9 +123,14 @@ function buildEmailHtml(order: NewOrder): string {
 }
 
 function buildEmailText(order: NewOrder): string {
-  return [
+  const lines = [
     "=== NOUVELLE COMMANDE ===",
     `Produit : ${order.productCode}`,
+  ];
+  if (order.color) {
+    lines.push(`Couleur : ${order.color}`);
+  }
+  lines.push(
     `Taille  : ${order.size}`,
     `Quantité: ${order.qty}`,
     `Ville   : ${order.city}`,
@@ -84,7 +139,8 @@ function buildEmailText(order: NewOrder): string {
     `Notes   : ${order.notes || "—"}`,
     `Langue  : ${order.locale.toUpperCase()}`,
     `Total   : ${order.totalPrice} DH`,
-  ].join("\n");
+  );
+  return lines.join("\n");
 }
 
 export async function sendOrderNotification(order: NewOrder) {
@@ -111,4 +167,3 @@ export async function sendOrderNotification(order: NewOrder) {
     html: buildEmailHtml(order),
   });
 }
-

@@ -2,6 +2,7 @@ import { neon } from "@neondatabase/serverless";
 
 export type NewOrder = {
   productCode: string;
+  color?: string;
   size: string;
   qty: number;
   city: string;
@@ -19,6 +20,7 @@ export type OrderStatus = "new" | "confirmed" | "shipped" | "delivered" | "cance
 export type OrderRow = {
   id: number;
   product_code: string;
+  color: string | null;
   size: string;
   qty: number;
   city: string;
@@ -113,6 +115,7 @@ async function ensureOrdersTable() {
   // Backwards-compatible migrations for existing deployments.
   await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'new'`;
   await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`;
+  await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS color TEXT`;
 }
 
 export async function createOrder(order: NewOrder) {
@@ -121,10 +124,11 @@ export async function createOrder(order: NewOrder) {
 
   await sql`
     INSERT INTO orders (
-      product_code, size, qty, city, phone, name, notes, status, locale, unit_price, total_price
+      product_code, color, size, qty, city, phone, name, notes, status, locale, unit_price, total_price
     )
     VALUES (
       ${order.productCode},
+      ${order.color ?? null},
       ${order.size},
       ${order.qty},
       ${order.city},
@@ -147,6 +151,7 @@ export async function getOrders(): Promise<OrderRow[]> {
     SELECT
       id,
       product_code,
+      color,
       size,
       qty,
       city,
@@ -265,6 +270,7 @@ export async function getOrdersPage(query: OrdersQuery = {}): Promise<OrdersPage
       SELECT
         id,
         product_code,
+        color,
         size,
         qty,
         city,

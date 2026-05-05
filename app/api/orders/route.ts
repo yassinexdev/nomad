@@ -12,6 +12,7 @@ export async function POST(request: Request) {
     const payload = await request.json();
 
     const productCode = String(payload?.productCode ?? "").trim();
+    const color = String(payload?.color ?? "").trim() || undefined;
     const size = String(payload?.size ?? "").trim();
     const qty = Number(payload?.qty ?? 0);
     const city = String(payload?.city ?? "").trim();
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
 
     const order = {
       productCode,
+      color,
       size,
       qty,
       city,
