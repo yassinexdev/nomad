@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function SiteHeader() {
   return (
@@ -13,7 +12,6 @@ export function SiteHeader() {
       >
         Z
       </Link>
-      <LanguageSwitcher />
     </header>
   );
 }

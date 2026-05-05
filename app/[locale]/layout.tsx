@@ -23,15 +23,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   setRequestLocale(locale);
   const messages = await getMessages();
 
-  const dir = locale === "ar" ? "rtl" : "ltr";
-  const fontClass = locale === "ar" ? "font-arabic" : "font-sans";
-
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div
-        lang={locale}
-        dir={dir}
-        className={`flex min-h-full flex-1 flex-col ${fontClass}`}
+        lang="fr"
+        dir="ltr"
+        className="flex min-h-full flex-1 flex-col font-sans"
         suppressHydrationWarning
       >
         {children}

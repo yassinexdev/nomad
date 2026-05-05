@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 const media = [
   { type: "image" as const, src: image1 },
@@ -32,8 +32,6 @@ type ImageCarouselProps = {
 
 export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
   const t = useTranslations("ProductNova101");
-  const locale = useLocale();
-  const isRtl = locale === "ar";
   const [api, setApi] = useState<CarouselApi>();
   const [selected, setSelected] = useState(0);
 
@@ -53,8 +51,8 @@ export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
     <div className="w-full space-y-3">
       <Carousel
         className="w-full"
-        opts={{ direction: isRtl ? "rtl" : "ltr" }}
-        dir={isRtl ? "rtl" : "ltr"}
+        opts={{ direction: "ltr" }}
+        dir="ltr"
         setApi={setApi}
       >
         <CarouselContent className="ml-0">
@@ -77,15 +75,11 @@ export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
         </CarouselContent>
         <CarouselPrevious
           variant="default"
-          className={`${
-            isRtl ? "left-auto! right-3" : "left-3 right-auto!"
-          } h-8 w-8 border border-zinc-200 bg-white/90 text-zinc-700 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/90 dark:text-zinc-200`}
+          className="left-3 right-auto! h-8 w-8 border border-zinc-200 bg-white/90 text-zinc-700 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/90 dark:text-zinc-200"
         />
         <CarouselNext
           variant="default"
-          className={`${
-            isRtl ? "left-3 right-auto!" : "left-auto! right-3"
-          } h-8 w-8 border border-zinc-200 bg-white/90 text-zinc-700 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/90 dark:text-zinc-200`}
+          className="left-auto! right-3 h-8 w-8 border border-zinc-200 bg-white/90 text-zinc-700 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/90 dark:text-zinc-200"
         />
       </Carousel>
 

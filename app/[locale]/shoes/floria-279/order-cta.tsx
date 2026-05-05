@@ -42,8 +42,6 @@ export function OrderCta() {
   const t = useTranslations("Order");
   const router = useRouter();
   const locale = useLocale();
-  const direction = locale === "ar" ? "rtl" : "ltr";
-  const rtlFields = locale === "ar";
 
   const [size, setSize] = useState("");
   const [city, setCity] = useState("");
@@ -217,9 +215,7 @@ export function OrderCta() {
             </span>
             <InputWithStartIcon
               icon={<FaUser className="size-4 shrink-0" aria-hidden />}
-              rtl={rtlFields}
               type="text"
-              dir={direction}
               autoComplete="name"
               placeholder={t("namePlaceholder")}
               value={name}
@@ -237,7 +233,6 @@ export function OrderCta() {
             </span>
             <InputWithStartIcon
               icon={<FaPhone className="size-4 shrink-0" aria-hidden />}
-              rtl={rtlFields}
               type="tel"
               dir="ltr"
               inputMode="tel"
@@ -260,9 +255,7 @@ export function OrderCta() {
             </span>
             <InputWithStartIcon
               icon={<FaMapMarkerAlt className="size-4 shrink-0" aria-hidden />}
-              rtl={rtlFields}
               type="text"
-              dir={direction}
               name="order-city"
               autoComplete="off"
               placeholder={t("cityPlaceholder")}

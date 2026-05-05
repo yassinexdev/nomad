@@ -36,8 +36,6 @@ export function OrderCta() {
   const t = useTranslations("Order");
   const router = useRouter();
   const locale = useLocale();
-  const direction = locale === "ar" ? "rtl" : "ltr";
-  const rtlFields = locale === "ar";
 
   const COLOR_VARIANTS = [
     { id: "rouge", hex: "#DC2626", label: t("colorRed") },
@@ -284,9 +282,7 @@ export function OrderCta() {
             <span className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{t("nameLabel")}</span>
             <InputWithStartIcon
               icon={<FaUser className="size-4 shrink-0" aria-hidden />}
-              rtl={rtlFields}
               type="text"
-              dir={direction}
               autoComplete="name"
               placeholder={t("namePlaceholder")}
               value={name}
@@ -302,7 +298,6 @@ export function OrderCta() {
             <span className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{t("phoneLabel")}</span>
             <InputWithStartIcon
               icon={<FaPhone className="size-4 shrink-0" aria-hidden />}
-              rtl={rtlFields}
               type="tel"
               dir="ltr"
               inputMode="tel"
@@ -323,9 +318,7 @@ export function OrderCta() {
             <span className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{t("cityLabel")}</span>
             <InputWithStartIcon
               icon={<FaMapMarkerAlt className="size-4 shrink-0" aria-hidden />}
-              rtl={rtlFields}
               type="text"
-              dir={direction}
               name="order-city"
               autoComplete="off"
               placeholder={t("cityPlaceholder")}
