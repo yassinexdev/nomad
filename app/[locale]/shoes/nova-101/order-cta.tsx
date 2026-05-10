@@ -151,21 +151,6 @@ export function OrderCta() {
   return (
     <section id="order-section" className="mt-2 scroll-mt-28 space-y-6 md:scroll-mt-8">
       <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 shadow-sm ring-1 ring-zinc-900/5 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/40 dark:ring-white/5 sm:p-6">
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              {t("orderButton")}
-            </p>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t("requiredHint")}</p>
-          </div>
-          <div className="shrink-0 text-right">
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">{t("stickyBarLabel")}</p>
-            <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-              {totalPrice} {t("currency")}
-            </p>
-          </div>
-        </div>
-
         <div className="grid gap-4 sm:grid-cols-2">
           {/* ── Color selector ── */}
           <div className="flex flex-col gap-2.5 sm:col-span-2">
@@ -255,7 +240,7 @@ export function OrderCta() {
                 }
               }}
               aria-invalid={sizeError}
-              className="grid grid-cols-4 gap-2 sm:grid-cols-7"
+              className="grid grid-cols-7 gap-2"
             >
               {EU_SIZES.map((s) => (
                 <RadioGroupItem
