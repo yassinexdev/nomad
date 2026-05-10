@@ -1,11 +1,11 @@
 {
   "Home": {
-    "ariaLogo": "Zed Market",
+    "ariaLogo": "Nomad",
     "heroTitle": "Chaussures en cuir",
     "heroTitleAccent": "fabriquées pour durer",
     "heroSubtitle": "Style sobre, finition soignée, livraison gratuite partout au Maroc.",
     "heroCta": "Voir la collection",
-    "featuresTitle": "Pourquoi Zed Market ?",
+    "featuresTitle": "Pourquoi Nomad ?",
     "feature1Title": "Livraison gratuite",
     "feature1Desc": "Livraison offerte dans toutes les villes du Maroc, sans minimum d'achat.",
     "feature2Title": "Paiement à la livraison",
@@ -22,7 +22,7 @@
     "trustSubtitle": "Un service simple, rapide et sans surprise."
   },
   "ShoesCategory": {
-    "metadataTitle": "Chaussures en cuir | Zed Market",
+    "metadataTitle": "Chaussures en cuir | Nomad",
     "metadataDescription": "Découvrez notre collection de chaussures en cuir — livraison gratuite au Maroc, paiement à la livraison.",
     "breadcrumbHome": "Accueil",
     "breadcrumbCategory": "Chaussures",
@@ -40,14 +40,17 @@
     "ar": "عربي"
   },
   "Footer": {
-    "salesPolicy": "Politique de commande et de paiement"
+    "salesPolicy": "Politique de commande",
+    "contact": "Nous contacter",
+    "tagline": "Chaussures en cuir — livraison gratuite au Maroc.",
+    "rights": "Tous droits réservés."
   },
   "ThankYou": {
     "title": "Merci pour votre commande",
     "subtitle": "Nous avons bien reçu votre demande. Notre équipe vous contactera bientôt pour confirmer la livraison.",
     "ctaProduct": "Retour au produit",
     "ctaHome": "Accueil",
-    "metadataTitle": "Merci | Zed Market",
+    "metadataTitle": "Merci | Nomad",
     "metadataDescription": "Votre commande a bien été enregistrée. Nous vous recontactons très vite."
   },
   "ProductFloria279": {
@@ -126,7 +129,7 @@
     "whatsappProduct": "Je souhaite commander : {productName}, pointure EU {size}, quantité : {qty}.",
     "whatsappCity": "Ville : {city}.",
     "whatsappName": "Nom : {name}.",
-    "whatsappFooter": "(Zed Market)"
+    "whatsappFooter": "(Nomad)"
   },
   "SalesPolicy": {
     "title": "Politique de commande et de paiement",
@@ -138,7 +141,7 @@
       "Mode de paiement actuellement accepté : paiement à la livraison uniquement.",
       "Vous pouvez verifier le produit au moment de la livraison avant de confirmer la reception."
     ],
-    "metadataTitle": "Politique de commande et de paiement | Zed Market",
+    "metadataTitle": "Politique de commande et de paiement | Nomad",
     "metadataDescription": "Precise la disponibilite des produits, le paiement a la livraison et la verification du produit au moment de la livraison avant confirmation."
   },
   "Cities": {
