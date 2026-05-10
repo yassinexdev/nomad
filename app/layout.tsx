@@ -17,15 +17,15 @@ const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Zed Market",
-    template: "%s | Zed Market",
+    default: "Nomad",
+    template: "%s | Nomad",
   },
   description:
-    "Zed Market — boutique en ligne au Maroc. Commandez directement sur le site.",
+    "Nomad — boutique de chaussures en cuir au Maroc. Livraison gratuite partout au Maroc.",
   openGraph: {
     type: "website",
     locale: "fr_MA",
-    siteName: "Zed Market",
+    siteName: "Nomad",
   },
 };
 
