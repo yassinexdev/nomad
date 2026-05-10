@@ -182,6 +182,7 @@ export function OrderCta() {
                     onClick={() => {
                       setColor(cv.id);
                       trackFieldFill("color", true);
+                      window.dispatchEvent(new CustomEvent("color-changed", { detail: cv.id }));
                     }}
                     style={isSelected ? { boxShadow: `0 0 0 3px white, 0 0 0 5px ${cv.hex}` } : undefined}
                     className={[

@@ -41,9 +41,22 @@ export function ImageCarousel({ imageAlt }: ImageCarouselProps) {
     api.on("select", sync);
     api.on("reInit", sync);
     queueMicrotask(sync);
+
+    const onColorChanged = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      const colorId = customEvent.detail;
+      if (colorId === "rouge") {
+        api.scrollTo(0);
+      } else if (colorId === "jaune") {
+        api.scrollTo(3);
+      }
+    };
+    window.addEventListener("color-changed", onColorChanged);
+
     return () => {
       api.off("select", sync);
       api.off("reInit", sync);
+      window.removeEventListener("color-changed", onColorChanged);
     };
   }, [api]);
 
