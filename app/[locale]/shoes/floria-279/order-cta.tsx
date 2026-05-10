@@ -171,7 +171,7 @@ export function OrderCta() {
                 }
               }}
               aria-invalid={sizeError}
-              className="grid grid-cols-7 gap-2"
+              className="grid grid-cols-6 gap-2"
             >
               {EU_SIZES.map((s) => (
                 <RadioGroupItem
