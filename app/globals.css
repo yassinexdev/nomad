@@ -42,6 +42,24 @@ body {
   }
 }
 
+/* Order CTA: diagonal shimmer sweep — light glint travels left→right */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-130%) skewX(-20deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(230%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
 /* WhatsApp floating button pulse */
 @keyframes whatsapp-pulse {
   0%, 100% {

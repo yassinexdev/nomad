@@ -10,7 +10,7 @@ const buttonVariants = cva(
         default: "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900",
         emerald:
           "bg-emerald-600 text-white shadow-sm hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-md",
-        /** Primary green CTA: glow + hover lift + press (see `order-cta-glow` in globals.css) */
+        /** Primary green CTA: glow + hover lift + press + shimmer sweep (see globals.css) */
         orderCta:
           "relative overflow-hidden border border-emerald-500/90 bg-emerald-600 text-white " +
           "shadow-[0_4px_18px_-6px_rgba(16,185,129,0.55)] " +
@@ -19,7 +19,12 @@ const buttonVariants = cva(
           "active:translate-y-0 active:scale-[0.98] " +
           "motion-safe:animate-[order-cta-glow_2.8s_ease-in-out_infinite] motion-reduce:animate-none " +
           "focus-visible:ring-emerald-300 dark:border-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:focus-visible:ring-emerald-600 " +
-          "disabled:motion-safe:animate-none",
+          "disabled:motion-safe:animate-none " +
+          // Shimmer sweep pseudo-element
+          "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1/3 " +
+          "before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent " +
+          "motion-safe:before:animate-[shimmer-sweep_3s_ease-in-out_1s_infinite] motion-reduce:before:animate-none " +
+          "disabled:before:animate-none",
       },
       size: {
         default: "h-11 px-4 py-2",
