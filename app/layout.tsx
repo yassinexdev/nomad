@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const notoSansArabic = Noto_Sans_Arabic({
   variable: "--font-noto-arabic",
@@ -37,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${notoSansArabic.variable} h-full antialiased`}
+      className={`${inter.variable} ${notoSansArabic.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
